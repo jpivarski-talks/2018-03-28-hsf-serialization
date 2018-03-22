@@ -151,5 +151,104 @@ There are several techniques for solving it in general (hot CS topic in early 20
 \end{columns}
 \end{frame}
 
+\begin{frame}{Hierarchically nested data or flat tables?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Has schema (strongly typed) or dynamic?}
+\vspace{0.5 cm}
+Same issue as in programming languages: can we express the data type once for all elements of a collection or do we have to express it separately for each element?
+
+\vfill
+
+\begin{description}
+\item[Haves:] ROOT, Parquet, Avro, and many others\ldots
+\item[Have nots:] JSON, BSON (binary JSON), MessagePack, and many others\ldots
+\end{description}
+
+\vfill
+
+Just as in programming languages, there are arguments for and against schemas, and they're helpful in some situations, harmful in others.
+
+\vfill
+
+In HEP, we know the schema in advance for reasonably large blocks of event data and want the performance advantages of schemas. \textcolor{gray}{Without a schema, every object must be accompanied by type metadata (even a reference): repeated field names account for most of JSON and BSON's bloat (it's {\it not} because JSON is text!).}
+\end{frame}
+
+\begin{frame}{Schema evolution, if applicable?}
+\vspace{0.5 cm}
+{\bf If} a schema is used to compile runtime objects, {\bf then} a mismatch between an old schema and a new schema can render old data unreadable. Schema evolution is a set of rules to automatically translate data schemas into container objects.
+
+
+
+\end{frame}
+
+\begin{frame}{Language agnostic or specific?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Rowwise or columnar?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Compressed/compressible?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Robust aginst bit errors?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Serialized/runtime unity?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Human readable, binary, or both?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Immutable/append only/full database?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Parallel readable?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Parallel writable?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Read streamable?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Write streamable?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Random accessible?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Database-style indexing?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{RPC protocol?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Has specification?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Independent implementations?}
+\vspace{0.5 cm}
+\end{frame}
+
+\begin{frame}{Size of user base?}
+\vspace{0.5 cm}
+\end{frame}
 
 \end{document}
