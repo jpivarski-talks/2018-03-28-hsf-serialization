@@ -362,6 +362,27 @@ I find it fascinating that human-readability is such an important consideration 
 
 \begin{frame}{Accessibility: Immutable/append only/full database?}
 \vspace{0.5 cm}
+Can you add data to an existing file? It doesn't count if you have to overwrite or rewrite large sections of the file to ``make room'' for the new data.
+
+\vspace{0.35 cm}
+
+Most file formats are intended as immutable artifacts: if you want a new version of the data, you write a new file. In HEP, we usually {\it use} data that way.
+
+\vspace{0.35 cm}
+
+Append-only is an interesting case between immutability and full database-like access: you can add records to the end, but not in the middle.
+
+\vspace{0.35 cm}
+
+Closely related to the question of partial-write recovery: appendable formats can usually be recovered up to the last good record.
+
+\vspace{0.15 cm}
+
+\begin{description}
+\item[Immutable:] Parquet (all metadata in footer), JSON and most text formats\ldots
+\item[Appendable:] CSV, JSONLines (JSON {\tt\small \textbackslash n} JSON\ldots), Avro, OAMap \mbox{(raw data backend)\hspace{-1 cm}}
+\item[Database:] ROOT (header describes seek keys; can add new keys, \mbox{invalidate old ones),\hspace{-1 cm}} \\ HDF5, SQLite
+\end{description}
 \end{frame}
 
 \begin{frame}{Accessibility: Parallel readable?}
