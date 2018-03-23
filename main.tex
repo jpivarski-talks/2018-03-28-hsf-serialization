@@ -508,6 +508,30 @@ Apache Arrow was designed to be an in-memory format, shared among processes. Thi
 
 \begin{frame}{Community: Has specification?}
 \vspace{0.5 cm}
+Most data formats have specifications, human-readable documents describing what every byte means. This allows for independent implementation and a chance to clarify what the code is {\it supposed} to do (to determine what ``wrong'' means).
+
+\vspace{0.25 cm}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c l}
+FITS & \href{https://fits.gsfc.nasa.gov/standard30/fits_standard30aa.pdf}{\textcolor{blue}{\small https://fits.gsfc.nasa.gov/standard30/fits\_standard30aa.pdf}} \\
+
+ProtoBuf & \href{https://developers.google.com/protocol-buffers/docs/encoding}{\textcolor{blue}{\small https://developers.google.com/protocol-buffers/docs/encoding}} \\
+
+Thrift & {\small {\bf UNOFFICIAL:} \href{https://erikvanoosten.github.io/thrift-missing-specification}{\textcolor{blue}{\small https://erikvanoosten.github.io/thrift-missing-specification}}} \\
+
+Avro & \href{http://avro.apache.org/docs/current/spec.html}{\textcolor{blue}{\small http://avro.apache.org/docs/current/spec.html}} \\
+
+Parquet & \href{http://parquet.apache.org/documentation/latest}{\textcolor{blue}{\small http://parquet.apache.org/documentation/latest}} \\
+
+Arrow & \href{https://arrow.apache.org/docs/memory_layout.html}{\textcolor{blue}{\small https://arrow.apache.org/docs/memory\_layout.html}} \\
+
+HDF5 & \href{https://support.hdfgroup.org/HDF5/doc/H5.format.html}{\textcolor{blue}{\small https://support.hdfgroup.org/HDF5/doc/H5.format.html}} \\
+
+ROOT & {\small some class headers like \href{https://root.cern.ch/doc/master/classTFile.html}{\textcolor{blue}{TFile}} and \href{https://root.cern.ch/doc/master/classTKey.html}{\textcolor{blue}{TKey}}, but not nearly enough info to read data} \\
+\end{tabular}
+
+\vspace{0.25 cm}
+The ROOT file format has no specification, by choice (to allow for rapid change).
 \end{frame}
 
 \begin{frame}{Community: Independent implementations?}
