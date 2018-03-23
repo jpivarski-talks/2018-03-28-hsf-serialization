@@ -271,7 +271,23 @@ Columnar representation allows more efficient access to a subset of attributes (
 \end{frame}
 
 \begin{frame}{Performance: Compressed/compressible?}
-\vspace{0.5 cm}
+\vspace{0.35 cm}
+Of course any file can be compressed, but it sure is convenient if compression is a built-in option. Compression trades read and write throughput for serialized size.
+
+\begin{columns}
+\column{0.6\linewidth}
+\includegraphics[width=\linewidth]{root-parquet-size-throughput.pdf}
+\column{0.4\linewidth}
+\small
+Some serialization formats skirt the boundary between simple encoding and compression. Parquet {\it with compression turned off} results in \underline{smaller}, \underline{slower} files than ROOT {\it with lz4 compression turned on.}
+
+\vspace{0.25 cm}
+\normalsize
+\begin{description}
+\item[Haves:] ROOT, ProtoBuf, Thrift, Avro, Parquet, HDF5, and many others\ldots
+\item[Have nots:] JSON, CSV\ldots
+\end{description}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Performance: Robust aginst bit errors?}
