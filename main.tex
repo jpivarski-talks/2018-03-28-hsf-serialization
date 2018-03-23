@@ -128,10 +128,10 @@ There are several techniques for solving it in general (hot CS topic in early 20
 \begin{itemize}\setlength{\itemsep}{-0.05 cm}
 \item Human readable, binary, or both?
 \item Immutable/append only/full database?
+\item Partial-write recovery?
 \item Parallel readable?
 \item Parallel writable?
-\item Read streamable?
-\item Write streamable?
+\item Streamable?
 \item Random accessible?
 \item Database-style indexing?
 \item RPC protocol?
@@ -385,6 +385,20 @@ Closely related to the question of partial-write recovery: appendable formats ca
 \end{description}
 \end{frame}
 
+\begin{frame}{Partial-write recovery?}
+If a writing process does not finish writing data, is the partially written data readable?
+
+\vspace{0.2 cm}
+\textcolor{gray}{(Particularly important for DAQ systems that could crash and lose data forever.)}
+
+\vfill
+
+\begin{description}
+\item[Haves:] ROOT (with special-case handling in the reader), most rowwise appendable formats like CSV, JSONLines, and Avro, OAMap because it fills columns corresponding to innermost structures first
+\item[Have nots:] Parquet (all metadata in footer; footer must be written), HDF5 (!!!)
+\end{description}
+\end{frame}
+
 \begin{frame}{Accessibility: Parallel readable?}
 \vspace{0.5 cm}
 Does the file format define chunks that can be understood independently of one another? Could a writing thread spoil that independence?
@@ -419,24 +433,39 @@ Can a file format be {\it written} by independent threads? The positions of page
 
 \begin{description}
 \item[Haves:] Blosc, HDF5, memory-mapped arrays in Numpy\ldots
-\item[Have nots:] ROOT can compress baskets in parallel, but it must write them sequentially.
+\item[Have nots:] ROOT can compress baskets in parallel, but it must write \mbox{them sequentially.\hspace{-1 cm}}
 \end{description}
 \end{frame}
 
-\begin{frame}{Accessibility: Read streamable?}
+\begin{frame}{Accessibility: streamable?}
 \vspace{0.5 cm}
+Can a program make sense of data \underline{\it before the file is fully read} and \underline{\it without seeking?}
 
+\vfill
 
+Some file access methods, like HTTP, have no ability to seek. For local disks, sequential reads are much faster than random reads.
 
+\vfill
 
-\end{frame}
-
-\begin{frame}{Accessibility: Write streamable?}
-\vspace{0.5 cm}
+\begin{description}
+\item[Haves:] JSONLines, CSV, Avro
+\item[Have nots:] ROOT (seek keys in header), Parquet (seek keys in footer)
+\end{description}
 \end{frame}
 
 \begin{frame}{Accessibility: Random accessible?}
 \vspace{0.5 cm}
+Can a program jump to a desired element of a large collection by entry number?
+
+\vfill
+It doesn't count if you have to deserialize the first $N-1$ elements to find the location of element $N$.
+
+\vfill
+
+\begin{description}
+\item[Haves:] ROOT (lookup index included for variable-length data). Arrow and OAMap (offset columns act as indexes to nested data). However, if data are compressed, the entire basket/page/partition must be decompressed to access a single element.
+\item[Have nots:] ProtoBuf, Thrift, Avro, and any rowwise format without a lookup index. JSON, CSV, XML and any text-based format without a lookup index. Uncompressed Parquet is {\it not} random accessible: its tightly packed encoding prevents this.
+\end{description}
 \end{frame}
 
 \begin{frame}{Accessibility: Database-style indexing?}
