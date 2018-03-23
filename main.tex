@@ -71,7 +71,7 @@
 \textcolor{white}{For example:} \hspace{1 cm}tracks contain hits\ldots
 
 \vspace{0.35 cm}
-It's important that the nested objects have variable size, since structs of structs of integers are not {\it really} nested: they compile to constant offsets, just like flat data.
+It's important that the nested objects have variable length, since structs of structs of integers are not {\it really} nested: they compile to constant offsets, just like flat data.
 
 \vspace{0.35 cm}
 Fortran (pre-90) didn't have this feature, so physicists had to add it.
@@ -366,7 +366,7 @@ Can you add data to an existing file? It doesn't count if you have to overwrite 
 
 \vspace{0.35 cm}
 
-Most file formats are intended as immutable artifacts: if you want a new version of the data, you write a new file. In HEP, we usually {\it use} data that way.
+Most file formats are intended as immutable artifacts: if you want a new version of the data, you write a new file. In HEP, we often {\it use} data that way.
 
 \vspace{0.35 cm}
 
@@ -387,6 +387,22 @@ Closely related to the question of partial-write recovery: appendable formats ca
 
 \begin{frame}{Accessibility: Parallel readable?}
 \vspace{0.5 cm}
+Does the file format define chunks that can be understood independently of one another? Could a writing thread spoil that independence?
+
+\vfill
+
+\begin{description}
+\item[Haves:] The ROOT format, if treated as an immutable object, is parallel readable at the basket level. \href{https://github.com/scikit-hep/uproot}{\textcolor{blue}{uproot}} takes advantage of this, but the ROOT's Implicit MultiThreading (IMT) introduces synchronization points to coordinate mutable state.
+
+\vspace{0.1 cm}
+\href{http://blosc.org/pages/blosc-in-depth/}{\textcolor{blue}{Blosc}}, a meta-compression framework, decompresses data in CPU cache-sized blocks faster than {\tt\small memcpy} can copy uncompressed data.
+
+\item[Have nots:] Any variable-length data without seek keys: Avro, JSON\ldots
+\end{description}
+
+\vfill
+
+\textcolor{gray}{Incidentally, parallel reading and writing are unsung features of memory-mapping: no mutable state introduced by the file pointer. Many thread-local pointers read from different parts of the virtual address space.}
 \end{frame}
 
 \begin{frame}{Accessibility: Parallel writable?}
