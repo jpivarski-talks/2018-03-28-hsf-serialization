@@ -397,20 +397,38 @@ Does the file format define chunks that can be understood independently of one a
 \vspace{0.1 cm}
 \href{http://blosc.org/pages/blosc-in-depth/}{\textcolor{blue}{Blosc}}, a meta-compression framework, decompresses data in CPU cache-sized blocks faster than {\tt\small memcpy} can copy uncompressed data.
 
+\vspace{0.1 cm}
+HDF5 has parallel reading, as well as memory-mapped arrays in Numpy.
+
 \item[Have nots:] Any variable-length data without seek keys: Avro, JSON\ldots
 \end{description}
 
 \vfill
 
-\textcolor{gray}{Incidentally, parallel reading and writing are unsung features of memory-mapping: no mutable state introduced by the file pointer. Many thread-local pointers read from different parts of the virtual address space.}
+\textcolor{gray}{Incidentally, parallel reading and writing are unsung features of memory-mapping: no mutable state is introduced by a file pointer. Many thread-local pointers read from different parts of the virtual address space.}
 \end{frame}
 
 \begin{frame}{Accessibility: Parallel writable?}
 \vspace{0.5 cm}
+Different from parallel reading: \textcolor{darkblue}{reading and writing are not symmetric!}
+
+\vspace{0.5 cm}
+Can a file format be {\it written} by independent threads? The positions of pages must be determined before writing, before you know how large the data to save will be (because it's compressed). This may lead to overestimates and therefore ``gaps'' in the output file, inflating its size.
+
+\vspace{0.5 cm}
+
+\begin{description}
+\item[Haves:] Blosc, HDF5, memory-mapped arrays in Numpy\ldots
+\item[Have nots:] ROOT can compress baskets in parallel, but it must write them sequentially.
+\end{description}
 \end{frame}
 
 \begin{frame}{Accessibility: Read streamable?}
 \vspace{0.5 cm}
+
+
+
+
 \end{frame}
 
 \begin{frame}{Accessibility: Write streamable?}
