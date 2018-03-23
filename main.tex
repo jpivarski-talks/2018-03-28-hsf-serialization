@@ -152,7 +152,7 @@ There are several techniques for solving it in general (hot CS topic in early 20
 \end{columns}
 \end{frame}
 
-\begin{frame}{Hierarchically nested or flat tables?}
+\begin{frame}{Expressiveness: Hierarchically nested or flat tables?}
 \vspace{0.5 cm}
 Hierarchical nesting could be seen as a special case of graph data, but it's an important special case because hierarchical types may have strongly typed schemas and special contiguity properties, such as rowwise vs.\ columnar.
 
@@ -188,7 +188,7 @@ Flat table
 \end{description}
 \end{frame}
 
-\begin{frame}{Has schema (strongly typed) or dynamic?}
+\begin{frame}{Expressiveness: Has schema (strongly typed) or dynamic?}
 \vspace{0.5 cm}
 Same issue as in programming languages: can we express the data type once for all elements of a collection or do we have to express it separately for each element?
 
@@ -208,7 +208,7 @@ Just as in programming languages, there are arguments for and against schemas, a
 In HEP, we know the schema in advance for reasonably large blocks of event data and want the performance advantages of schemas. \textcolor{gray}{Without a schema, every object must be accompanied by type metadata (even if it's just a reference). Repeated field names account for most of JSON and BSON's bloat (it's {\it not} because JSON is text!).}
 \end{frame}
 
-\begin{frame}{Schema evolution, if applicable?}
+\begin{frame}{Expressiveness: Schema evolution, if applicable?}
 \vspace{0.5 cm}
 \underline{\it If} a schema is used to compile runtime objects, \underline{\it then} a mismatch between an old schema and a new schema can render old data unreadable. Schema evolution is a set of rules to automatically translate data schemas into container objects.
 
@@ -228,7 +228,7 @@ Generally, we'd like to delay ``hard compiling'' types until {\it after} we've s
 
 \end{frame}
 
-\begin{frame}{Language agnostic or specific?}
+\begin{frame}{Expressiveness: Language agnostic or specific?}
 \vspace{0.5 cm}
 A serialization format may be specialized to a given language and (eventually) handle every data type in that language. This is true of ROOT, which covers almost all of C++'s types. \textcolor{darkblue}{Good for designing types for code, rather than serialization.}
 
@@ -244,67 +244,89 @@ Alternately, it could define a type system typical of programming languages but 
 \end{description}
 \end{frame}
 
-\begin{frame}{Rowwise or columnar?}
+\begin{frame}{Performance: Rowwise or columnar?}
+\vspace{0.35 cm}
+Columnar representation allows more efficient access to a subset of attributes (the only ones used in an analysis, for instance) because network $\to$ computer, disk $\to$ memory, memory $\to$ CPU, and memory $\to$ co-processor pipelines all cache {\it contiguous bytes.}
+
+\vspace{0.25 cm}
+\textcolor{darkblue}{Hierarchically nested example:} {\tt\small vector<vector<pair<char, int>>>}
+
+\vspace{0.25 cm}
+\begin{tabular}{r l}
+\small logical data & {\tt\scriptsize \textcolor{blue}{[}\textcolor{violet}{[}(\textcolor{darkorange}{a},\textcolor{darkgreen}{1}), (\textcolor{darkorange}{b},\textcolor{darkgreen}{2}), (\textcolor{darkorange}{c},\textcolor{darkgreen}{3}), (\textcolor{darkorange}{d},\textcolor{darkgreen}{4})\textcolor{violet}{]}, \textcolor{violet}{[]}, \textcolor{violet}{[}(\textcolor{darkorange}{e},\textcolor{darkgreen}{5}), (\textcolor{darkorange}{f},\textcolor{darkgreen}{6})\textcolor{violet}{]}\textcolor{blue}{]}, \textcolor{blue}{[]}, \textcolor{blue}{[}\textcolor{violet}{[}(\textcolor{darkorange}{g},\textcolor{darkgreen}{7})\textcolor{violet}{]}\textcolor{blue}{]}\ \textcolor{white}{]}} \\\hline
+\small outer stops & {\tt\scriptsize \textcolor{blue}{[\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3,\ \ 3,\ \ \ \ \ \ \ \ \ 4]}} \\
+\small inner stops & {\tt\scriptsize \textcolor{violet}{[\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4,\ \ 4,\ \ \ \ \ \ \ \ \ \ \ \ \ \ 6,\ \ \ \ \ \ \ \ \ \ \ \ \ 7\ ]}} \\
+\small 1$^{\mbox{\scriptsize st}}$ attribute & {\tt\scriptsize \textcolor{darkorange}{[\ \ a,\ \ \ \ \ b,\ \ \ \ \ c,\ \ \ \ \ d,\ \ \ \ \ \ \ \ \ \ \ e,\ \ \ \ \ f,\ \ \ \ \ \ \ \ \ \ \ \ \ g\ \ \ \ \ ]}} \\
+\small 2$^{\mbox{\scriptsize nd}}$ attribute & {\tt\scriptsize \textcolor{darkgreen}{[\ \ \ \ 1,\ \ \ \ \ 2,\ \ \ \ \ 3,\ \ \ \ \ 4,\ \ \ \ \ \ \ \ \ \ \ 5,\ \ \ \ \ 6,\ \ \ \ \ \ \ \ \ \ \ \ \ 7\ \ \ ]}}
+\end{tabular}
+
+\vspace{0.25 cm}
+\textcolor{gray}{The ``stops'' column is a running total number of entries at each closing bracket {\it of that level of hierarchy.} The attribute data (leaves of the tree) are stored without boundaries.}
+
+\vspace{0.25 cm}
+\begin{description}
+\item[Haves:] ROOT (only one level deep), Parquet, ORC (database file), OAMap\ldots
+\item[Have nots:] JSON, ProtoBuf, Thrift, Avro, Google FlatBuffers, and many others\ldots
+\end{description}
+\end{frame}
+
+\begin{frame}{Performance: Compressed/compressible?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Compressed/compressible?}
+\begin{frame}{Performance: Robust aginst bit errors?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Robust aginst bit errors?}
+\begin{frame}{Performance: Serialized/runtime unity?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Serialized/runtime unity?}
+\begin{frame}{Accessibility: Human readable, binary, or both?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Human readable, binary, or both?}
+\begin{frame}{Accessibility: Immutable/append only/full database?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Immutable/append only/full database?}
+\begin{frame}{Accessibility: Parallel readable?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Parallel readable?}
+\begin{frame}{Accessibility: Parallel writable?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Parallel writable?}
+\begin{frame}{Accessibility: Read streamable?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Read streamable?}
+\begin{frame}{Accessibility: Write streamable?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Write streamable?}
+\begin{frame}{Accessibility: Random accessible?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Random accessible?}
+\begin{frame}{Accessibility: Database-style indexing?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Database-style indexing?}
+\begin{frame}{Accessibility: RPC protocol?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{RPC protocol?}
+\begin{frame}{Community: Has specification?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Has specification?}
+\begin{frame}{Community: Independent implementations?}
 \vspace{0.5 cm}
 \end{frame}
 
-\begin{frame}{Independent implementations?}
-\vspace{0.5 cm}
-\end{frame}
-
-\begin{frame}{Size of user base?}
+\begin{frame}{Community: Size of user base?}
 \vspace{0.5 cm}
 \end{frame}
 
