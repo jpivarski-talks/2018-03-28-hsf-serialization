@@ -183,7 +183,7 @@ Flat table
 \vspace{0.25 cm}
 
 \begin{description}
-\item[Haves:] ROOT, Parquet, Avro, JSON, and many others\ldots
+\item[Haves:] ROOT, Parquet, Avro, JSON, XML, and many others\ldots
 \item[Have nots:] CSV, SQLite, Numpy, {\it high-performance} HDF5\ldots
 \end{description}
 \end{frame}
@@ -213,9 +213,9 @@ In HEP, we know the schema in advance for reasonably large blocks of event data 
 \underline{\it If} a schema is used to compile runtime objects, \underline{\it then} a mismatch between an old schema and a new schema can render old data unreadable. Schema evolution is a set of rules to automatically translate data schemas into container objects.
 
 \begin{description}
-\item[Haves:] ROOT, ProtoBuf, Thrift, Avro, all in very different ways.
+\item[Haves:] ROOT, ProtoBuf, Thrift, Avro, all in very different ways
 \item[Have nots:] Objectivity, Java serialization (without manual effort)\ldots
-\item[Inapplicables:] Any schemaless format (e.g.\ JSON) and any format without fixed containers: Google FlatBuffers (runtime indirection), OAMap (JIT).
+\item[Inapplicables:] Any schemaless format (e.g.\ JSON) and any format without fixed containers: Google FlatBuffers (runtime indirection), OAMap (JIT)
 \end{description}
 
 \vspace{0.25 cm}
@@ -239,8 +239,8 @@ Alternately, it could define a type system typical of programming languages but 
 \vfill
 
 \begin{description}
-\item[Agnostic:] ProtoBuf, Thrift, Avro, Parquet, OAMap, SQL schemas.
-\item[Specific:] ROOT, Cap'n Proto (C++), Pickle (Python), Kryo (Java, in Spark).
+\item[Agnostic:] ProtoBuf, Thrift, Avro, Parquet, OAMap, SQL schemas
+\item[Specific:] ROOT, Cap'n Proto (C++), Pickle (Python), Kryo (Java, in Spark)
 \end{description}
 \end{frame}
 
@@ -337,6 +337,27 @@ Links: \href{https://www.snia.org/forums/sssi}{\textcolor{blue}{SNIA SSSI}}, \hr
 
 \begin{frame}{Accessibility: Human readable, binary, or both?}
 \vspace{0.5 cm}
+From {\it ASDF: A new data format for astronomy} {\small (P.\ Greenfield, M.\ Droettboom, E.\ Bray)}:
+
+\begin{center}
+\begin{minipage}{0.9\linewidth}
+\scriptsize [HDF5] is an entirely binary format. FITS headers are easily human-readable. Nothing like that is the case for HDF5 files. All inspection of HDF5 files must be done through HDF5 software. With FITS, it is quite possible to inspect the header with very primitive tools. The consequence of this for HDF5 is that the HDF5 toolset must be installed, and its software must be used if one wants to inspect the contents of the HDF5 file in any way.
+\end{minipage}
+\end{center}
+
+I find it fascinating that human-readability is such an important consideration in astronomy, but HEP never gave it a second thought.
+
+\vspace{0.25 cm}
+
+\textcolor{gray}{Human readable numbers with fewer than 4 or 8 characters may be viewed as a kind of lossy compression, especially when combined with standard compression\ldots}
+
+\vspace{0.25 cm}
+
+\begin{description}
+\item[Binary:] ROOT, BSON, and most formats mentioned in this talk
+\item[Human:] JSON, CSV, YAML (basis of ASDF)
+\item[Both:] FITS, ASDF, YAML (through {\tt\small !!binary}), XML (through {\tt\small CDATA})
+\end{description}
 \end{frame}
 
 \begin{frame}{Accessibility: Immutable/append only/full database?}
