@@ -52,16 +52,16 @@
 
 % START START START START START START START START START START START START START
 
-\begin{frame}{45 years of serialization formats in HEP}
+\begin{frame}{45 years of serialization formats in (and out of) HEP}
 \vspace{0.25 cm}
 \includegraphics[width=\linewidth]{history.pdf}
 \end{frame}
 
-\begin{frame}{Two features have been significant, setting HEP apart}
+\begin{frame}{The two most significant features, setting HEP apart}
 \vspace{0.5 cm}
 \begin{columns}[t]
 \column{0.5\linewidth}
-\underline{\Large Hierarchically nested structures}
+\textcolor{darkorange}{\bf \underline{\Large Hierarchically nested structures}}
 
 \vspace{0.35 cm}
 \textcolor{darkblue}{For example:} event contains jets,
@@ -71,28 +71,29 @@
 \textcolor{white}{For example:} \hspace{1 cm}tracks contain hits\ldots
 
 \vspace{0.35 cm}
-It's significant that the nested objects have variable size, since structs of structs of integers compile away into constant offsets.
+It's important that the nested objects have variable size, since structs of structs of integers are not {\it really} nested: they compile to constant offsets, just like flat data.
 
 \vspace{0.35 cm}
-Fortran (pre-90) didn't have this feature, so physicists had to add it. Now it's much more common.
+Fortran (pre-90) didn't have this feature, so physicists had to add it.
 
 \column{0.5\linewidth}
-\underline{\Large Columnar representation}
+\textcolor{darkorange}{\bf \underline{\Large Columnar representation}}
 
 \vspace{0.35 cm}
 \textcolor{darkblue}{For example:} all values of muon~$p_T$ are contiguous in serialized form, followed by all values of muon~$\eta$, all values of muon~$\phi$, and all \#muons per event.
 
 \vspace{0.35 cm}
-Thus, you can read muon~$p_T$ without also reading jet~$p_T$.
+Thus, you can read muon~$p_T$ without reading jet~$p_T$.
 
 \vspace{0.35 cm}
-Easy for flat data: just a transpose.
+Easy for flat data: it's just a transpose.
 
+\vspace{0.1 cm}
 There are several techniques for solving it in general (hot CS topic in early 2000's).
 \end{columns}
 \end{frame}
 
-\begin{frame}{20 questions}
+\begin{frame}{20 questions to ask about any file format}
 \vspace{0.15 cm}
 \small
 \begin{columns}
@@ -101,7 +102,7 @@ There are several techniques for solving it in general (hot CS topic in early 20
 \begin{block}{Expressiveness}
 \vspace{-0.2 cm}
 \begin{itemize}\setlength{\itemsep}{-0.05 cm}
-\item Hierarchically nested data or flat tables?
+\item \textcolor{darkorange}{\bf Hierarchically nested or flat tables?}
 \item Has schema (strongly typed) or dynamic?
 \item Schema evolution, if applicable?
 \item Language agnostic or specific?
@@ -113,7 +114,7 @@ There are several techniques for solving it in general (hot CS topic in early 20
 \begin{block}{Performance}
 \vspace{-0.2 cm}
 \begin{itemize}\setlength{\itemsep}{-0.05 cm}
-\item Rowwise or columnar?
+\item \textcolor{darkorange}{\bf Rowwise or columnar?}
 \item Compressed/compressible?
 \item Robust against bit errors?
 \item Serialized/runtime unity?
@@ -151,8 +152,27 @@ There are several techniques for solving it in general (hot CS topic in early 20
 \end{columns}
 \end{frame}
 
-\begin{frame}{Hierarchically nested data or flat tables?}
+\begin{frame}{Hierarchically nested or flat tables?}
 \vspace{0.5 cm}
+Hierarchical nesting could be seen as a special case of a graph, but it's an important special case because hierarchical types may have strongly typed schemas and special contiguity properties, such as rowwise vs.\ columnar.
+
+\vspace{0.35 cm}
+
+\begin{columns}
+\column{0.2\linewidth}
+\column{0.3\linewidth}
+\mbox{ } \hfill \includegraphics[width=\linewidth]{event-structure.pdf} \hfill \hfill \mbox{ }
+\column{0.3\linewidth}
+\mbox{ } \hfill \includegraphics[width=\linewidth]{table-structure.pdf} \hfill \hfill \mbox{ }
+\column{0.2\linewidth}
+\end{columns}
+
+\vfill
+
+\begin{description}
+\item[Haves:] ROOT, Parquet, Avro, JSON, and many others\ldots
+\item[Have nots:] CSV, SQLite, Numpy, high-performance HDF5\ldots
+\end{description}
 \end{frame}
 
 \begin{frame}{Has schema (strongly typed) or dynamic?}
@@ -172,19 +192,43 @@ Just as in programming languages, there are arguments for and against schemas, a
 
 \vfill
 
-In HEP, we know the schema in advance for reasonably large blocks of event data and want the performance advantages of schemas. \textcolor{gray}{Without a schema, every object must be accompanied by type metadata (even a reference): repeated field names account for most of JSON and BSON's bloat (it's {\it not} because JSON is text!).}
+In HEP, we know the schema in advance for reasonably large blocks of event data and want the performance advantages of schemas. \textcolor{gray}{Without a schema, every object must be accompanied by type metadata (even if it's just a reference). Repeated field names account for most of JSON and BSON's bloat (it's {\it not} because JSON is text!).}
 \end{frame}
 
 \begin{frame}{Schema evolution, if applicable?}
 \vspace{0.5 cm}
 {\bf If} a schema is used to compile runtime objects, {\bf then} a mismatch between an old schema and a new schema can render old data unreadable. Schema evolution is a set of rules to automatically translate data schemas into container objects.
 
+\begin{description}
+\item[Haves:] ROOT, ProtoBuf, Thrift, Avro, all in very different ways.
+\item[Have nots:] Objectivity, Java serialization (without manual effort)\ldots
+\item[Inapplicables:] Any schemaless format (e.g.\ JSON) and any format without fixed containers: Google FlatBuffers (runtime indirection), OAMap (JIT).
+\end{description}
 
+\vspace{0.25 cm}
+
+Schema evolution isn't a well-defined dichotomy, but a spectrum of techniques filling the continuum between static typing (assert types at the earliest possible time) and dynamic typing (assert types at the latest possible time). ROOT's typing is not strictly ``static'' because it uses a JIT-compiler to compile \href{https://root.cern.ch/root/SchemaEvolution.pdf}{\textcolor{blue}{Streamer Rules}}.
+
+\vspace{0.25 cm}
+
+Generally, we'd like to delay ``hard compiling'' types until {\it after} we've seen the data schema and {\it before} we run over a million events. JIT is a good solution.
 
 \end{frame}
 
 \begin{frame}{Language agnostic or specific?}
 \vspace{0.5 cm}
+A serialization format may be specialized to a given language and (eventually) handle every data type in that language. This is true of ROOT, which covers almost all of C++'s types. \textcolor{darkblue}{Good for designing types for code, rather than serialization.}
+
+\vfill
+
+Alternately, it could define a type system typical of programming languages but not aligned with any one language. These types are then mapped onto each language without a full bijection (e.g.\ all ProtoBuf types can be expressed in C++, but not all C++ types can be expressed in ProtoBuf). \textcolor{darkblue}{Good for cross-language interoperability.}
+
+\vfill
+
+\begin{description}
+\item[Agnostic:] ProtoBuf, Thrift, Avro, Parquet, OAMap, SQL schemas.
+\item[Specific:] ROOT, Cap'n Proto (C++), Pickle (Python), Kryo (Java, in Spark).
+\end{description}
 \end{frame}
 
 \begin{frame}{Rowwise or columnar?}
