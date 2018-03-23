@@ -313,6 +313,26 @@ Since compression increases sensitivity to bit errors (can scramble an entire co
 
 \begin{frame}{Performance: Serialized/runtime unity?}
 \vspace{0.5 cm}
+This is new; increasingly relevant as storage class memory becomes mainstream:
+
+\begin{center}
+\begin{minipage}{0.9\linewidth}
+\textcolor{red}{Is the byte-representation of serialized data equal to the byte-representation of runtime objects? That is, are data structures zero-copy, zero-conversion?}
+\end{minipage}
+\end{center}
+
+It allows, for instance, a memory-mapped file to be used directly as runtime data. {\tt\small mmap} (1 system call) is often faster than {\tt\small fread} (many system calls) and deserializing data can be a throughput bottleneck, depending on what you do with it afterward.
+
+\vspace{0.25 cm}
+
+Links: \href{https://www.snia.org/forums/sssi}{\textcolor{blue}{SNIA SSSI}}, \href{https://lwn.net/Articles/717953/}{\textcolor{blue}{DAX direct access}}, \href{https://pmem.io/}{\textcolor{blue}{PMEM development kit}}, \href{http://scitechconnect.elsevier.com/memory-management-unit/}{\textcolor{blue}{MMU mapping}}.
+
+\vspace{0.15 cm}
+
+\begin{description}
+\item[Haves:] This is a design goal of the Apache Arrow project, particularly for Spark, Pandas, and R DataFrames. ``Feather'' is memory-mapped Arrow on disk. Apache Drill (SQL) highlights their lack of ``row materialization.'' OAMap with raw data or Arrow as a backend also satisfies this criterion.
+\item[Have nots:] Most data formats, including ROOT.
+\end{description}
 \end{frame}
 
 \begin{frame}{Accessibility: Human readable, binary, or both?}
