@@ -154,20 +154,33 @@ There are several techniques for solving it in general (hot CS topic in early 20
 
 \begin{frame}{Hierarchically nested or flat tables?}
 \vspace{0.5 cm}
-Hierarchical nesting could be seen as a special case of a graph, but it's an important special case because hierarchical types may have strongly typed schemas and special contiguity properties, such as rowwise vs.\ columnar.
+Hierarchical nesting could be seen as a special case of graph data, but it's an important special case because hierarchical types may have strongly typed schemas and special contiguity properties, such as rowwise vs.\ columnar.
 
-\vspace{0.35 cm}
+\vspace{-0.5 cm}
 
-\begin{columns}
-\column{0.2\linewidth}
-\column{0.3\linewidth}
-\mbox{ } \hfill \includegraphics[width=\linewidth]{event-structure.pdf} \hfill \hfill \mbox{ }
-\column{0.3\linewidth}
-\mbox{ } \hfill \includegraphics[width=\linewidth]{table-structure.pdf} \hfill \hfill \mbox{ }
-\column{0.2\linewidth}
+\begin{columns}[t]
+\column{0.1\linewidth}
+\column{0.4\linewidth}
+\begin{center}
+Hierarchical
+
+\vspace{0.2 cm}
+\includegraphics[width=0.7\linewidth]{event-structure.pdf}
+\end{center}
+\column{0.4\linewidth}
+\begin{center}
+Flat table
+
+\vspace{0.2 cm}
+\includegraphics[width=0.7\linewidth]{table-structure.pdf}
+
+\small (conversion to a flat table is {\it lossy!})
+
+\end{center}
+\column{0.1\linewidth}
 \end{columns}
 
-\vfill
+\vspace{0.25 cm}
 
 \begin{description}
 \item[Haves:] ROOT, Parquet, Avro, JSON, and many others\ldots
