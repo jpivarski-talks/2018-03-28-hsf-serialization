@@ -292,6 +292,23 @@ Some serialization formats skirt the boundary between simple encoding and compre
 
 \begin{frame}{Performance: Robust aginst bit errors?}
 \vspace{0.5 cm}
+In large datasets, bit errors can occur. Robustness consists of three questions:
+\begin{itemize}
+\item Can a bit error be detected, for instance using a CRC?
+\item Can a bit error be repaired with replication in the file? \textcolor{gray}{(I've never heard of this.)}
+\item If bad data has to be skipped, how much has to be skipped? A page or a \mbox{whole file?\hspace{-1 cm}}
+\end{itemize}
+
+\vfill
+
+Since compression increases sensitivity to bit errors (can scramble an entire compression frame), compression formats often have CRC features built in. The question is whether the file format saves CRCs and whether readers check them.
+
+\vfill
+
+\begin{description}
+\item[Haves:] ROOT, HDF5, Avro, Parquet, mostly through using the compressor's CRCs. As far as I know, these do not include robustness in object headers, just bulk data.
+\item[Have nots:] JSON, CSV\ldots\ Hard to be sure a format with compression doesn't use the CRC.
+\end{description}
 \end{frame}
 
 \begin{frame}{Performance: Serialized/runtime unity?}
