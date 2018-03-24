@@ -109,7 +109,7 @@ There are several techniques for solving it in general (hot CS topic in early 20
 \end{itemize}
 \end{block}
 
-\vspace{0.5 cm}
+\vspace{0.35 cm}
 
 \begin{block}{Performance}
 \vspace{-0.2 cm}
@@ -120,6 +120,9 @@ There are several techniques for solving it in general (hot CS topic in early 20
 \item Serialized/runtime unity?
 \end{itemize}
 \end{block}
+
+\vspace{0.15 cm}
+\textcolor{gray}{$2^{20}$ yes/no combinations = 1 million formats}
 
 \column{0.5\linewidth}
 
@@ -153,7 +156,7 @@ There are several techniques for solving it in general (hot CS topic in early 20
 \end{frame}
 
 \begin{frame}{Expressiveness: Hierarchically nested or flat tables?}
-\vspace{0.5 cm}
+\vspace{0.35 cm}
 Hierarchical nesting could be seen as a special case of graph data, but it's an important special case because hierarchical types may have strongly typed schemas and special contiguity properties, such as rowwise vs.\ columnar.
 
 \vspace{-0.5 cm}
@@ -230,7 +233,7 @@ Generally, we'd like to delay ``hard compiling'' types until {\it after} we've s
 
 \begin{frame}{Expressiveness: Language agnostic or specific?}
 \vspace{0.5 cm}
-A serialization format may be specialized to a given language and (eventually) handle every data type in that language. This is true of ROOT, which covers almost all of C++'s types. \textcolor{darkblue}{Good for designing data types for code, rather than serialization.}
+A serialization format may be specialized to a given language and (eventually) handle every data type in that language. This is true of ROOT, which covers almost all of C++'s types. \textcolor{darkblue}{Good for optimizing data types to the code, rather than serialization.}
 
 \vfill
 
@@ -274,7 +277,7 @@ Columnar representation allows more efficient access to a subset of attributes (
 
 \begin{frame}{Performance: Compressed/compressible?}
 \vspace{0.35 cm}
-Of course any file can be compressed, but it sure is convenient if compression is a built-in option. Compression trades read and write throughput for serialized size.
+Of course you can take any file and compress it, but it sure is convenient if compression is a built-in option. Compression trades read and write throughput for serialized size.
 
 \begin{columns}
 \column{0.6\linewidth}
@@ -338,7 +341,7 @@ Links: \href{https://www.snia.org/forums/sssi}{\textcolor{blue}{SNIA SSSI}}, \hr
 \end{description}
 
 \vspace{0.1 cm}
-\textcolor{gray}{Compression always spoils serialized/runtime unity. This is not for archival data.}
+\textcolor{gray}{Compression always spoils serialized/runtime unity. It's not for archival data.}
 \end{frame}
 
 \begin{frame}{Accessibility: Human readable, binary, or both?}
@@ -351,7 +354,7 @@ From {\it ASDF: A new data format for astronomy} {\small (P.\ Greenfield, M.\ Dr
 \end{minipage}
 \end{center}
 
-I find it fascinating that human-readability is such an important consideration in astronomy, but HEP never gave it a second thought.
+I find it fascinating that human-readability is such an important consideration in astronomy that it's an argument against HDF5, but HEP rarely considers it.
 
 \vspace{0.25 cm}
 
@@ -401,7 +404,7 @@ If a writing process does not finish writing data, is the partially written data
 
 \begin{description}
 \item[Haves:] ROOT (with special-case handling in the reader), most rowwise appendable formats like CSV, JSONLines, and Avro, OAMap because it fills columns corresponding to innermost structures first
-\item[Have nots:] Parquet (all metadata in footer; footer must be written), HDF5 (!!!)
+\item[Have nots:] Parquet (all metadata in footer; footer must be written), \textcolor{red}{HDF5 (!!!)}
 \end{description}
 \end{frame}
 
@@ -412,7 +415,7 @@ Does the file format define chunks that can be understood independently of one a
 \vfill
 
 \begin{description}
-\item[Haves:] The ROOT format, if treated as an immutable object, is parallel readable at the basket level. \href{https://github.com/scikit-hep/uproot}{\textcolor{blue}{uproot}} takes advantage of this, but the ROOT's Implicit Multi-Threading (IMT) introduces synchronization points to coordinate mutable state.
+\item[Haves:] The ROOT format, if treated as an immutable object, is parallel readable at the basket level. \href{https://github.com/scikit-hep/uproot}{\textcolor{blue}{uproot}} takes advantage of this, but ROOT's Implicit Multi-Threading (IMT) introduces synchronization points to coordinate mutable state (protect against writing threads?).
 
 \vspace{0.1 cm}
 \href{http://blosc.org/pages/blosc-in-depth/}{\textcolor{blue}{Blosc}}, a meta-compression framework, decompresses data in CPU cache-sized blocks faster than {\tt\small memcpy} can copy uncompressed data.
@@ -473,16 +476,19 @@ It doesn't count if you have to deserialize the first $N-1$ elements to find the
 \item[Have nots:] ProtoBuf, Thrift, Avro, and any rowwise format without a lookup index. JSON, CSV, XML and any text-based format without a lookup index.
 
 \vspace{0.2 cm}
-Uncompressed Parquet is {\it not} random accessible: its tightly packed encoding prevents this. You have to decode an entire data page to find an element by entry number (just like compression).
+Uncompressed Parquet is {\it not} random accessible: its tightly packed encoding prevents this. You have to decode an entire data page to find an element by entry number (just as you would if it were compressed).
 \end{description}
 \end{frame}
 
 \begin{frame}{Accessibility: Database-style indexing?}
 \vspace{0.5 cm}
-Random accessibility allows you to jump to a desired {\it entry number;} database-style indexing allows you to jump to desired data {\it by value.}
+Random accessibility allows you to jump to a desired {\it entry number;} database-style indexing allows you to jump to or quickly select data {\it by value.}
 
 \vfill
+
 It still counts if the search is not constant time but $\mathcal{O}(\log N)$ (search through a tree). It does not count if the search is $\mathcal{O}(N)$.
+
+\vfill
 
 \begin{description}
 \item[Haves:] Parquet has metadata to indicate whether the data are sorted and what the minimum/maximum values are in a batch (``zone maps'').
@@ -491,12 +497,12 @@ It still counts if the search is not constant time but $\mathcal{O}(\log N)$ (se
 \end{frame}
 
 \begin{frame}{Accessibility: RPC protocol?}
-\vspace{0.5 cm}
+\vspace{0.35 cm}
 Some formats were designed for archival files, some for Remote Procedure Calls (RPC), but many function as both.
 
 \vspace{0.25 cm}
 
-An important consideration in RPC is to be able to send messages as soon as they're ready, which usually {\it favors rowwise formats over columnar formats.} \href{http://sqlstream.com/2015/03/5-reasons-why-spark-streamings-batch-processing-of-data-streams-is-not-stream-processing/}{\textcolor{blue}{Spark-Streaming}} is criticized because Spark's columnar data representation forces it to send data in ``micro batches'' (100 events per batch, for example).
+An important consideration in RPC is to be able to send messages as soon as they're ready, which usually {\it favors rowwise formats over columnar formats.} \href{http://sqlstream.com/2015/03/5-reasons-why-spark-streamings-batch-processing-of-data-streams-is-not-stream-processing/}{\textcolor{blue}{Spark-Streaming is criticized}} because Spark's columnar data representation forces it to send data in ``micro batches'' (100 events per batch, for example).
 
 \begin{description}
 \item[RPC:] JSON, ProtoBuf, Thrift, Avro, Cap'n Proto, and MessagePack were all designed for RPC, but work as file formats.
